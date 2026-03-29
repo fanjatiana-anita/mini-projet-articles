@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: iran_news_db
+    environment:
+      POSTGRES_DB: iran_news
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: olivia
+    volumes:
+      - ./database/script.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - iran_news_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d iran_news"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Serveur PHP avec Apache
+  frontend:
+    image: php:8.2-apache
+    container_name: iran_news_frontend
+    volumes:
+      - ./frontend:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - iran_news_network
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    command: >
+      bash -c "
+        docker-php-ext-install pdo pdo_pgsql &&
+        a2enmod rewrite &&
+        apache2-foreground
+      "
+
+  # phpPgAdmin pour gérer la base (optionnel)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: iran_news_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@iran-news.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - iran_news_network
+
+networks:
+  iran_news_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
