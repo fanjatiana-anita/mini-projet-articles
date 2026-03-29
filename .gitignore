@@ -1,0 +1,17 @@
+/.env
+/vendor/
+/node_modules/
+.DS_Store
+.idea/
+.vscode/
+/uploads/
+/tmp/
+/cache/
+/logs/
+Thumbs.db
+
+# Composer
+/composer.phar
+
+# Ignore OS generated files
+desktop.ini
