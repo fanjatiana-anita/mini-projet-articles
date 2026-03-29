@@ -1,0 +1,378 @@
+================================================================================
+       TODO LIST - MINI PROJET WEB DESIGN (Mars 2026)
+       Guerre en Iran - FrontOffice + BackOffice
+       Deadline : Mardi 31 mars à 14h00
+       Stack recommandée : PHP + MySQL + TinyMCE + Docker
+================================================================================
+
+REPARTITION DES TACHES (Olivia)
+────────────────────────────────
+  ▸ Anita           → Infrastructure + Backend + Docker + BDD
+  ▸ Olivia      → FrontOffice (HTML/CSS/SEO) + Rédaction contenu + Documentation
+
+================================================================================
+PHASE 1 — INITIALISATION DU PROJET (Anita - ~2h)
+================================================================================
+
+[ ] 1.1 Créer la structure des dossiers du projet
+        /mon-projet
+        ├── /frontend         ← Site FrontOffice
+        ├── /backend          ← Site BackOffice
+        ├── /database         ← Scripts SQL
+        ├── /docker           ← Fichiers Docker
+        ├── docker-compose.yml
+        └── README.md
+
+[ ] 1.2 Initialiser le dépôt Git
+        - Créer un dépôt PUBLIC sur GitHub ou GitLab
+        - git init
+        - git remote add origin <url>
+        - Créer un .gitignore (ignorer /vendor, .env, node_modules)
+        - Premier commit : "init project structure"
+
+[ ] 1.3 Créer le fichier docker-compose.yml
+        Services à inclure :
+        - php:8.2-apache  (ou php:8.2-fpm + nginx)
+        - mysql:8.0
+        - phpmyadmin (optionnel mais pratique)
+        Ports suggérés :
+        - FrontOffice  → http://localhost:8080
+        - BackOffice   → http://localhost:8081
+        - PHPMyAdmin   → http://localhost:8082
+
+[ ] 1.4 Créer le Dockerfile pour PHP
+        - Installer les extensions : pdo_mysql, mysqli, mbstring
+        - Activer mod_rewrite pour Apache (nécessaire pour URL rewriting)
+        - Copier les fichiers .htaccess
+
+[ ] 1.5 Tester que Docker fonctionne
+        - docker-compose up -d
+        - Vérifier que les containers tournent
+        - Vérifier que PHP répond sur localhost:8080
+
+================================================================================
+PHASE 2 — BASE DE DONNÉES (Anita- ~1h30)
+================================================================================
+
+[ ] 2.1 Modéliser la base de données (faire un schéma)
+        Tables recommandées :
+        ┌─────────────────────────────────────────────────┐
+        │ articles                                        │
+        │  - id (INT, PK, AUTO_INCREMENT)                 │
+        │  - titre (VARCHAR 255)                          │
+        │  - slug (VARCHAR 255, UNIQUE) ← pour les URLs   │
+        │  - contenu (LONGTEXT) ← contenu TinyMCE         │
+        │  - image_principale (VARCHAR 255)               │
+        │  - alt_image (VARCHAR 255) ← SEO obligatoire    │
+        │  - meta_description (VARCHAR 160) ← SEO         │
+        │  - meta_keywords (VARCHAR 255) ← SEO            │
+        │  - categorie_id (INT, FK)                       │
+        │  - date_publication (DATETIME)                  │
+        │  - statut (ENUM: 'publié','brouillon')          │
+        │  - created_at (TIMESTAMP)                       │
+        └─────────────────────────────────────────────────┘
+
+        ┌─────────────────────────────────────────────────┐
+        │ categories                                      │
+        │  - id (INT, PK, AUTO_INCREMENT)                 │
+        │  - nom (VARCHAR 100)                            │
+        │  - slug (VARCHAR 100, UNIQUE)                   │
+        └─────────────────────────────────────────────────┘
+
+        ┌─────────────────────────────────────────────────┐
+        │ utilisateurs (pour le BackOffice)               │
+        │  - id (INT, PK, AUTO_INCREMENT)                 │
+        │  - username (VARCHAR 50)                        │
+        │  - email (VARCHAR 100)                          │
+        │  - mot_de_passe (VARCHAR 255) ← hash bcrypt     │
+        │  - role (ENUM: 'admin','editeur')               │
+        └─────────────────────────────────────────────────┘
+
+[ ] 2.2 Écrire le fichier SQL (database/init.sql)
+        - CREATE DATABASE
+        - CREATE TABLE pour chaque table
+        - Insérer un user admin par défaut :
+          → username: admin  |  password: admin123 (hashé)
+        - Insérer 5 à 10 articles de test sur la guerre en Iran
+
+[ ] 2.3 Connecter PHP à MySQL
+        - Créer un fichier config/database.php
+        - Utiliser PDO (plus sécurisé que mysqli)
+        - Tester la connexion
+
+================================================================================
+PHASE 3 — BACKOFFICE (Anita+ Olivia - ~3h)
+================================================================================
+
+[ ] 3.1 Créer la page de login (/backend/login.php)
+        - Formulaire : username + password
+        - Vérifier les identifiants en base
+        - Créer une session PHP ($_SESSION)
+        - Rediriger vers le dashboard si OK
+        - IDENTIFIANTS PAR DÉFAUT À METTRE DANS LA DOC :
+          → login: admin  |  password: admin123
+
+[ ] 3.2 Créer le dashboard (/backend/index.php)
+        - Protéger toutes les pages BO avec session_check
+        - Afficher le nombre d'articles, catégories
+        - Menu de navigation : Articles | Catégories | Déconnexion
+
+[ ] 3.3 Gestion des articles (CRUD complet)
+        - Lister les articles (backend/articles/index.php)
+        - Créer un article (backend/articles/create.php)
+          → INTÉGRER TINYMCE ICI pour l'éditeur de contenu
+        - Modifier un article (backend/articles/edit.php?id=X)
+        - Supprimer un article (backend/articles/delete.php?id=X)
+        - Upload d'image avec champ ALT (important pour SEO)
+
+[ ] 3.4 Intégrer TinyMCE (éditeur WYSIWYG)
+        - Aller sur : https://www.tiny.cloud/
+        - Créer un compte gratuit → récupérer la clé API
+        - Intégrer le script dans le formulaire article :
+          <script src="https://cdn.tiny.cloud/1/VOTRE_CLE/tinymce/6/tinymce.min.js"></script>
+          <script>tinymce.init({ selector: '#contenu' });</script>
+        - Lier le textarea id="contenu" à TinyMCE
+        - Configurer les plugins : image, link, lists, table, code
+
+[ ] 3.5 Gestion des catégories
+        - Lister / Créer / Modifier / Supprimer
+
+[ ] 3.6 Déconnexion
+        - Détruire la session et rediriger vers login
+
+================================================================================
+PHASE 4 — FRONTOFFICE (Olivia principal - ~3h)
+================================================================================
+
+[ ] 4.1 Créer la page d'accueil (frontend/index.php)
+        Structure HTML SEO-friendly OBLIGATOIRE :
+        - <title> : titre unique et descriptif
+        - <meta name="description"> : résumé de la page
+        - <meta name="keywords">
+        - <meta charset="UTF-8">
+        - <meta name="viewport" content="width=device-width">
+        - <h1> : UN SEUL h1 par page (titre principal)
+        - <h2>, <h3> : pour les sous-sections
+        - Toutes les images avec attribut alt="description"
+
+[ ] 4.2 Créer la page liste des articles (frontend/articles.php)
+        - Afficher tous les articles publiés
+        - Chaque article avec titre (h2), extrait, image+alt, lien
+
+[ ] 4.3 Créer la page détail article (frontend/article.php?slug=xxx)
+        - Afficher le contenu complet de l'article
+        - Structure : h1 pour le titre, h2/h3 pour les sous-titres dans le contenu
+        - Image principale avec alt
+        - Meta description spécifique à l'article
+
+[ ] 4.4 Créer la navigation et le footer
+        - Menu avec liens vers catégories
+        - Footer avec liens utiles
+
+[ ] 4.5 CSS et design
+        - Utiliser Bootstrap 5 ou CSS personnalisé
+        - Responsive (testé mobile et desktop pour Lighthouse)
+
+================================================================================
+PHASE 5 — URL REWRITING (Anita- ~1h)
+================================================================================
+
+[ ] 5.1 Créer le fichier .htaccess à la racine du FrontOffice
+        Contenu :
+        ────────────────────────────────────────
+        Options +FollowSymLinks
+        RewriteEngine On
+
+        # Réécriture page article
+        RewriteRule ^article/([a-z0-9\-]+)/?$ article.php?slug=$1 [L,QSA]
+
+        # Réécriture catégorie
+        RewriteRule ^categorie/([a-z0-9\-]+)/?$ categorie.php?slug=$1 [L,QSA]
+
+        # Réécriture page simple
+        RewriteRule ^page/([a-z0-9\-]+)/?$ page.php?slug=$1 [L,QSA]
+        ────────────────────────────────────────
+
+[ ] 5.2 Activer mod_rewrite dans le Dockerfile
+        - RUN a2enmod rewrite
+        - Dans apache config : AllowOverride All
+
+[ ] 5.3 Tester les URLs réécrites
+        - http://localhost:8080/article/guerre-iran → doit fonctionner
+        - http://localhost:8080/categorie/actualites → doit fonctionner
+
+[ ] 5.4 Générer automatiquement les slugs depuis le titre
+        - Fonction PHP : creer_slug($titre)
+          → strtolower, str_replace espaces par -, supprimer accents
+          → Vérifier l'unicité en base
+
+================================================================================
+PHASE 6 — SEO - CHECKLIST COMPLÈTE (Olivia - ~1h)
+================================================================================
+
+[ ] 6.1 Balises meta sur TOUTES les pages
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="...max 160 caractères...">
+        <meta name="keywords" content="guerre iran, conflit iran, ...">
+        <title>Titre de la page | Nom du site</title>
+
+[ ] 6.2 Structure des titres (OBLIGATOIRE)
+        - 1 seul <h1> par page
+        - <h2> pour les sections principales
+        - <h3>, <h4> pour les sous-sections
+        - NE PAS sauter de niveau (h1 → h3 est interdit)
+
+[ ] 6.3 Images
+        - Chaque <img> doit avoir un attribut alt descriptif
+        - Exemple : alt="Soldats iraniens lors d'un exercice militaire 2024"
+        - Nommer les fichiers images avec des tirets (pas d'espaces)
+
+[ ] 6.4 Autres bonnes pratiques SEO
+        - URLs courtes et lisibles (grâce au rewriting)
+        - Pas de contenu dupliqué
+        - Texte lisible (pas de Lorem Ipsum en production)
+        - Liens internes entre articles
+
+================================================================================
+PHASE 7 — TEST LIGHTHOUSE (Les deux - ~1h)
+================================================================================
+
+[ ] 7.1 Installer Google Chrome (ou utiliser Chrome existant)
+
+[ ] 7.2 Ouvrir Chrome DevTools → onglet "Lighthouse"
+
+[ ] 7.3 Lancer le test sur la page d'accueil
+        - Mode : Mobile → Lancer l'analyse → Faire une copie d'écran
+        - Mode : Desktop → Lancer l'analyse → Faire une copie d'écran
+
+[ ] 7.4 Objectifs de score minimum recommandés :
+        - Performance     : > 70
+        - Accessibility   : > 85
+        - Best Practices  : > 80
+        - SEO             : > 90  ← PRIORITÉ
+
+[ ] 7.5 Corriger les erreurs signalées par Lighthouse
+        Erreurs SEO fréquentes à corriger :
+        - "Document doesn't have a meta description" → ajouter <meta name="description">
+        - "Image elements do not have [alt] attributes" → ajouter alt=""
+        - "Document doesn't have a <title>" → ajouter <title>
+        - "Links are not crawlable" → vérifier les liens href
+
+================================================================================
+PHASE 8 — DOCKER FINALISATION (Anita- ~1h)
+================================================================================
+
+[ ] 8.1 Vérifier que tout fonctionne avec docker-compose up
+        - FrontOffice accessible
+        - BackOffice accessible
+        - BDD initialisée automatiquement avec init.sql
+
+[ ] 8.2 Créer un script d'initialisation automatique
+        Dans docker-compose.yml :
+        volumes:
+          - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+[ ] 8.3 Tester depuis zéro
+        - docker-compose down -v
+        - docker-compose up -d
+        - Vérifier que tout fonctionne sans manipulation manuelle
+
+[ ] 8.4 Créer le fichier ZIP final
+        - zip -r mon-projet.zip /mon-projet --exclude "*/node_modules/*"
+
+================================================================================
+PHASE 9 — DOCUMENTATION TECHNIQUE (Olivia - ~1h30)
+================================================================================
+
+[ ] 9.1 Créer le document technique (Word ou PDF)
+        Sections obligatoires :
+
+        A. Numéros ETU des deux étudiants
+        B. Lien GitHub/GitLab du dépôt public
+        C. Identifiants BackOffice par défaut
+           → URL : http://localhost:8081/login
+           → Username : admin
+           → Password : admin123
+        D. Modélisation de la base de données
+           → Schéma/diagramme des tables (capture PhpMyAdmin ou draw.io)
+        E. Copies d'écran FrontOffice
+           → Page d'accueil
+           → Page liste articles
+           → Page détail article
+        F. Copies d'écran BackOffice
+           → Page de login
+           → Dashboard
+           → Liste des articles
+           → Formulaire création/édition d'article (avec TinyMCE visible)
+        G. Résultats Lighthouse
+           → Score mobile (capture d'écran)
+           → Score desktop (capture d'écran)
+        H. Instructions de lancement
+           → git clone <url>
+           → docker-compose up -d
+           → Accès FO : http://localhost:8080
+           → Accès BO : http://localhost:8081/login
+
+================================================================================
+PHASE 10 — LIVRAISON FINALE (Tous les deux - 30 min)
+================================================================================
+
+[ ] 10.1 Push final sur GitHub/GitLab
+         - Vérifier que le dépôt est bien PUBLIC
+         - Vérifier que tous les fichiers sont committés
+         - Vérifier que .env n'est PAS dans le dépôt (données sensibles)
+
+[ ] 10.2 Créer le ZIP
+         - Inclure : tout le code source + docker-compose.yml + Dockerfiles
+         - Exclure : /vendor, node_modules, .git
+         - Nommer le ZIP : NomEtu1_NomEtu2_WebDesign2026.zip
+
+[ ] 10.3 Vérifier la checklist finale avant de remettre
+         [ ] URL rewriting fonctionne (/article/slug)
+         [ ] H1, H2, H3 bien structurés sur toutes les pages
+         [ ] <title> unique sur chaque page
+         [ ] <meta description> sur chaque page
+         [ ] Toutes les images ont un attribut alt
+         [ ] Test Lighthouse fait (captures d'écran dans la doc)
+         [ ] Login BO fonctionne avec admin/admin123
+         [ ] docker-compose up -d lance tout automatiquement
+         [ ] Dépôt Git public et à jour
+         [ ] Document technique complet avec numéros ETU
+         [ ] ZIP prêt à livrer
+
+================================================================================
+PLANNING SUGGÉRÉ (selon le temps restant)
+================================================================================
+
+  AUJOURD'HUI (Dimanche 29 mars)
+  ├── Anita : Phases 1, 2, 3 (Init + BDD + BO)
+  └── Olivia: Rédiger 8 à 10 articles sur la guerre en Iran
+                   (titre, contenu, image libre de droits, meta description)
+
+  LUNDI 30 mars
+  ├── Matin : Phase 4 (FrontOffice) + Phase 5 (URL Rewriting)
+  ├── Après-midi : Phase 6 (SEO) + Phase 7 (Lighthouse + corrections)
+  └── Soir : Phase 8 (Docker) + Phase 9 (Documentation)
+
+  MARDI 31 mars (matin seulement !)
+  └── Phase 10 : Livraison + ZIP + Git + vérification finale
+                 → DEADLINE 14h00 ← NE PAS ÊTRE EN RETARD
+
+================================================================================
+RESSOURCES UTILES
+================================================================================
+
+  TinyMCE          → https://www.tiny.cloud/
+  Bootstrap 5      → https://getbootstrap.com/
+  Images libres    → https://unsplash.com ou https://pixabay.com
+  Schéma BDD       → https://drawsql.app ou https://dbdiagram.io
+  Lighthouse       → Chrome DevTools → Onglet "Lighthouse"
+  .htaccess tester → https://htaccess.madewithlove.com/
+  PHP Slug         → function slug($str){ return strtolower(trim(preg_replace(
+                       '/[^a-zA-Z0-9-]+/', '-', $str), '-')); }
+
+================================================================================
+FIN DU TODO LIST
+Bon courage ! Vous pouvez y arriver avant mardi 14h00.
+================================================================================
