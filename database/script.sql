@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS iran_news;
 CREATE DATABASE iran_news;
 \c iran_news;
 
+
+-- Table des rôles
 CREATE TABLE roles (
     id      SERIAL PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
@@ -19,6 +21,7 @@ CREATE TABLE utilisateurs (
     mot_de_passe VARCHAR(255) NOT NULL,
     CONSTRAINT fk_role FOREIGN KEY(role_id) REFERENCES roles(id)
 );
+
 
 CREATE TABLE categories (
     id    SERIAL PRIMARY KEY,
