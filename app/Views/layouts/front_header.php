@@ -48,6 +48,10 @@ $categories = getCategories();
  </ul>
  </li>
  </ul>
+
+ <a href="<?= BASE_URL ?>/admin.php?page=login" class="btn btn-outline-light btn-sm">
+ <i class="bi bi-person-circle"></i> Connexion
+ </a>
  </div>
  </div>
 </nav>

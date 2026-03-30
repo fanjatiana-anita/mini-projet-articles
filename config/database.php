@@ -7,7 +7,7 @@ $host     = 'localhost'; // Docker : 'db'
 $port     = '5432';
 $dbname   = 'iran_news';
 $user     = 'postgres';
-$password = 'fanjatiana';
+$password = 'olivia';
 
 try {
     $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $user, $password);

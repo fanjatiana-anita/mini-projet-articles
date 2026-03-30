@@ -34,7 +34,7 @@ $categories = getCategories();
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- CSS personnalisé -->
-    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="/mini-projet-articles/public/css/style.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
@@ -75,6 +75,9 @@ $categories = getCategories();
                         <i class="bi bi-search"></i>
                     </button>
                 </form>
+                <a href="/mini-projet-articles/admin.php?page=login" class="btn btn-outline-light btn-sm ms-2">
+                    <i class="bi bi-person-circle"></i> Connexion
+                </a>
             </div>
         </div>
     </nav>

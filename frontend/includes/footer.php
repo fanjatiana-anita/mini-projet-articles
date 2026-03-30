@@ -15,6 +15,8 @@
                     </p>
                 </div>
 
+                
+
                 <!-- Catégories -->
                 <div class="col-md-4 mb-4">
                     <h2 class="h5 fw-bold mb-3">Catégories</h2>

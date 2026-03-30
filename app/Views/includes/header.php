@@ -72,9 +72,12 @@ $categories = getCategories();
  <form class="d-flex" role="search" action="articles.php" method="get">
  <input class="form-control me-2" type="search" name="q" placeholder="Rechercher..." aria-label="Rechercher">
  <button class="btn btn-outline-light" type="submit">
- 
+
  </button>
  </form>
+ <a href="<?= BASE_URL ?>/admin.php?page=login" class="btn btn-outline-light btn-sm ms-2">
+ <i class="bi bi-person-circle"></i> Connexion
+ </a>
  </div>
  </div>
  </nav>
