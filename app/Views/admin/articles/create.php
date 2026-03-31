@@ -53,7 +53,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<h1 class="h3 mb-4">Nouvel article</h1>
+<!-- Page Header avec style moderne -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2 mb-1">
+            <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>
+            Nouvel Article
+        </h1>
+        <p class="text-muted mb-0">
+            <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+            Créez un nouvel article pour Iran News
+        </p>
+    </div>
+    <div>
+        <a href="<?= adminUrl('articles') ?>" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+            Retour à la liste
+        </a>
+    </div>
+</div>
 
 <?php require ROOT . '/app/Views/admin/articles/form.php'; ?>
 
