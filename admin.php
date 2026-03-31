@@ -13,6 +13,9 @@ define('ROOT', __DIR__);
 // Charger les helpers (y compris adminUrl, BASE_URL, etc.)
 require_once ROOT . '/config/helpers.php';
 
+require_once ROOT . '/config/database.php';
+$pdo = getConnection();
+
 // Définir BASE_URL_ADMIN pour le backoffice
 if (!defined('BASE_URL_ADMIN')) {
     $script = $_SERVER['SCRIPT_NAME'] ?? '';

@@ -1,20 +1,20 @@
--- Script d'initialisation idempotent pour l'image postgres
--- L'image officielle crée la base définie par POSTGRES_DB.
--- Ici on crée les tables si elles n'existent pas déjà et insère
--- des données sample de façon sûre (ON CONFLICT / WHERE NOT EXISTS).
+DROP DATABASE IF EXISTS iran_news;
+CREATE DATABASE iran_news;
+\c iran_news;
+
 
 -- Table des rôles
-CREATE TABLE IF NOT EXISTS roles (
+CREATE TABLE roles (
     id      SERIAL PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS statuts (
+CREATE TABLE statuts (
     id      SERIAL PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS utilisateurs (
+CREATE TABLE utilisateurs (
     id           SERIAL PRIMARY KEY,
     role_id      INT NOT NULL,
     username     VARCHAR(50)  NOT NULL UNIQUE,
@@ -22,13 +22,14 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     CONSTRAINT fk_role FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
-CREATE TABLE IF NOT EXISTS categories (
+
+CREATE TABLE categories (
     id    SERIAL PRIMARY KEY,
     nom   VARCHAR(100) NOT NULL,
     slug  VARCHAR(100) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS articles (
+CREATE TABLE articles (
     id               SERIAL PRIMARY KEY,
     categorie_id     INT NOT NULL,
     statut_id        INT NOT NULL DEFAULT 2,
@@ -44,12 +45,14 @@ CREATE TABLE IF NOT EXISTS articles (
     CONSTRAINT fk_statut    FOREIGN KEY(statut_id)    REFERENCES statuts(id)
 );
 
-CREATE TABLE IF NOT EXISTS actions (
+-- Table des types d'actions (create, update, delete, restore)
+CREATE TABLE actions (
     id      SERIAL PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS articles_history (
+-- Table d'historique : trace CHAQUE modification d'article
+CREATE TABLE articles_history (
     id                SERIAL PRIMARY KEY,
     article_id        INT NOT NULL,
     action_id         INT NOT NULL,
@@ -69,24 +72,23 @@ CREATE TABLE IF NOT EXISTS articles_history (
     CONSTRAINT fk_user FOREIGN KEY(modifie_par) REFERENCES utilisateurs(id) ON DELETE SET NULL
 );
 
-INSERT INTO roles    (libelle) VALUES ('admin'), ('editeur') ON CONFLICT DO NOTHING;
-INSERT INTO statuts  (libelle) VALUES ('publie'), ('brouillon') ON CONFLICT DO NOTHING;
-INSERT INTO actions  (libelle) VALUES ('create'), ('update'), ('delete'), ('restore') ON CONFLICT DO NOTHING;
+INSERT INTO roles    (libelle) VALUES ('admin'), ('editeur');
+INSERT INTO statuts  (libelle) VALUES ('publie'), ('brouillon');
+INSERT INTO actions  (libelle) VALUES ('create'), ('update'), ('delete'), ('restore');
 
 INSERT INTO categories (nom, slug) VALUES
     ('Politique',  'politique'),
     ('Militaire',  'militaire'),
-    ('Diplomatie', 'diplomatie')
-ON CONFLICT DO NOTHING;
+    ('Diplomatie', 'diplomatie');
 
--- admin / admin123 (username unique)
+-- admin / admin123
 INSERT INTO utilisateurs (role_id, username, mot_de_passe) VALUES
-    (1, 'admin', '$2y$10$hc8t2aBSaG3bh4bQItcTHuSHfAj1/YdFTDmG2Rd4Zktaua033RktC')
-ON CONFLICT DO NOTHING;
+    (1, 'admin', '$2y$10$hc8t2aBSaG3bh4bQItcTHuSHfAj1/YdFTDmG2Rd4Zktaua033RktC');
 
--- Insérer les articles d'exemple uniquement si la table est vide
-INSERT INTO articles (categorie_id, statut_id, titre, slug, contenu, image_principale, alt_image, meta_description)
-SELECT * FROM (VALUES
+-- Les images pointent vers /mini-projet-articles/public/images/
+
+-- Les images pointent vers images/ (chemin relatif à public/)
+INSERT INTO articles (categorie_id, statut_id, titre, slug, contenu, image_principale, alt_image, meta_description) VALUES
 
 (1, 1, 'Les sanctions internationales contre l Iran',
  'sanctions-internationales-contre-iran',
@@ -125,9 +127,7 @@ SELECT * FROM (VALUES
 
 (3, 1, 'Relations Iran et Union Européenne',
  'relations-iran-union-europeenne',
- '<h2>Un dialogue difficile</h2><p>Les relations entre l Iran et l Union Europ\u00e9enne sont marqu\u00e9es par des tensions persistantes autour du nucléaire et des droits de l homme.</p><h3>M\u00e9diation europ\u00e9enne</h3><p>L UE joue un r\u00f4le de m\u00e9diateur entre T\u00e9h\u00e9ran et Washington pour maintenir un dialogue ouvert.</p>',
+ '<h2>Un dialogue difficile</h2><p>Les relations entre l Iran et l Union Européenne sont marquées par des tensions persistantes autour du nucléaire et des droits de l homme.</p><h3>Médiation européenne</h3><p>L UE joue un rôle de médiateur entre Téhéran et Washington pour maintenir un dialogue ouvert.</p>',
  'images/ue-iran.jpg',
- 'Drapeaux de l Union Europ\u00e9enne et de l Iran lors d une conférence diplomatique',
- 'État des relations diplomatiques entre l Iran et l Union Europ\u00e9enne en 2024.')
-) AS t(categorie_id, statut_id, titre, slug, contenu, image_principale, alt_image, meta_description)
-WHERE NOT EXISTS (SELECT 1 FROM articles);
+ 'Drapeaux de l Union Européenne et de l Iran lors d une conférence diplomatique',
+ 'État des relations diplomatiques entre l Iran et l Union Européenne en 2024.');

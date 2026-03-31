@@ -1,16 +1,17 @@
 Options +FollowSymLinks
 RewriteEngine On
-RewriteBase /L3/s6/web_design/tp/mini-projet/mini-projet-articles/
+# En Docker : le site est à la racine, pas dans un sous-dossier
+RewriteBase /
 
-# ── 1. Fichiers et dossiers réels → servis directement ───────
+# ── Fichiers/dossiers réels → servis directement ─────────────
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# ── 2. admin.php → jamais redirigé vers le routeur ───────────
+# ── admin.php → direct ───────────────────────────────────────
 RewriteRule ^admin\.php$ - [L]
 
-# ── 3. Tout le reste → routeur ────────────────────────────────
+# ── Tout le reste → routeur ───────────────────────────────────
 RewriteRule ^(.*)$ router.php?_route=$1 [L,QSA]
 
 # ── Sécurité ─────────────────────────────────────────────────
@@ -21,7 +22,7 @@ RewriteRule ^(.*)$ router.php?_route=$1 [L,QSA]
 Options -Indexes
 AddDefaultCharset UTF-8
 
-# ── Performances Lighthouse ───────────────────────────────────
+# ── Performances ──────────────────────────────────────────────
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType image/jpeg        "access plus 1 month"

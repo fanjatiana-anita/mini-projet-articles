@@ -1,46 +1,84 @@
 <?php
 /**
- * Routeur central pour les URLs propres frontend
- * Redirige les requêtes vers les bonnes vues sans changer le contexte de répertoire
+ * Routeur FrontOffice — router.php
  */
 
-// Définir la racine du projet
-define('ROOT', __DIR__);
+// ROOT défini ici une seule fois — index.php ne doit pas le redéfinir
+if (!defined('ROOT')) {
+    define('ROOT', __DIR__);
+}
 
-// Récupérer la route demandée
-$route = trim($_GET['_route'] ?? '', '/');
+require_once ROOT . '/config/database.php';
+require_once ROOT . '/config/helpers.php';
+require_once ROOT . '/app/Views/includes/functions.php';
 
-// Si route vide → page d'accueil
-if (empty($route)) {
-    require_once ROOT . '/app/Views/front/index.php';
+$uri = '/' . trim($_GET['_route'] ?? '', '/');
+
+// ── ACCUEIL ──────────────────────────────────────────────────
+if ($uri === '/') {
+    $derniersArticles = getArticlesPublies(6);
+    $categories       = getCategoriesAvecNb();
+    require ROOT . '/app/Views/front/index.php';
     exit;
 }
 
-// Parser la route
-if (preg_match('#^article/(\d+)-([a-z0-9\-]+)/?$#i', $route, $matches)) {
-    // Route: /article/5-guerre-iran
-    // matches[1] = ID (5)
-    // matches[2] = slug (guerre-iran) — pour validation SEO
-    $_GET['id'] = $matches[1];
-    $_GET['slug'] = $matches[2];
-    require_once ROOT . '/app/Views/front/article.php';
+// ── LISTE / RECHERCHE  →  /articles ─────────────────────────
+if (preg_match('#^/articles/?$#', $uri)) {
+    $recherche  = trim($_GET['q'] ?? '');
+    $articles   = !empty($recherche)
+        ? rechercherArticles($recherche)
+        : getArticlesPublies();
+    $categories = getCategoriesAvecNb();
+    $recents    = getArticlesPublies(5);
+    require ROOT . '/app/Views/front/articles.php';
     exit;
 }
 
-if (preg_match('#^categorie/([a-z0-9\-]+)/?$#i', $route, $matches)) {
-    // Route: /categorie/politique
-    $_GET['slug'] = $matches[1];
-    require_once ROOT . '/app/Views/front/categorie.php';
+// ── DÉTAIL ARTICLE  →  /article/{id}-{slug} ─────────────────
+if (preg_match('#^/article/(\d+)-([a-z0-9\-]+)/?$#i', $uri, $m)) {
+    $article = getArticleById((int)$m[1]);
+
+    if (!$article) {
+        http_response_code(404);
+        require ROOT . '/app/Views/front/404.php';
+        exit;
+    }
+
+    // Redirection canonique si slug différent
+    if ($article['slug'] !== $m[2]) {
+        header('HTTP/1.1 301 Moved Permanently');
+        header('Location: ' . BASE_URL . '/article/' . $article['id'] . '-' . $article['slug']);
+        exit;
+    }
+
+    $tousSimil = getArticlesByCategorie($article['categorie_slug']);
+    $articlesSimilaires = array_slice(
+        array_filter($tousSimil, fn($a) => $a['id'] !== $article['id']),
+        0, 3
+    );
+    $categories = getCategoriesAvecNb();
+    $recents    = getArticlesPublies(5);
+    require ROOT . '/app/Views/front/article.php';
     exit;
 }
 
-if (preg_match('#^articles/?$#i', $route)) {
-    // Route: /articles
-    require_once ROOT . '/app/Views/front/articles.php';
+// ── CATÉGORIE  →  /categorie/{slug} ─────────────────────────
+if (preg_match('#^/categorie/([a-z0-9\-]+)/?$#i', $uri, $m)) {
+    $categorie = getCategorieBySlug($m[1]);
+
+    if (!$categorie) {
+        http_response_code(404);
+        require ROOT . '/app/Views/front/404.php';
+        exit;
+    }
+
+    $articles   = getArticlesByCategorie($m[1]);
+    $categories = getCategoriesAvecNb();
+    $recents    = getArticlesPublies(5);
+    require ROOT . '/app/Views/front/categorie.php';
     exit;
 }
 
-// Si aucune route ne correspond → 404
+// ── 404 ──────────────────────────────────────────────────────
 http_response_code(404);
-require_once ROOT . '/app/Views/front/404.php';
-exit;
+require ROOT . '/app/Views/front/404.php';

@@ -8,12 +8,17 @@ require_once __DIR__ . '/env.php';
 
 // Déterminer l'URL de base du projet (utile lorsque le projet est dans un sous-dossier)
 if (!defined('BASE_URL')) {
-    $script = $_SERVER['SCRIPT_NAME'] ?? '';
-    // Retirer /index.php ou /router.php si présent
-    $base = preg_replace('#/(index|router|admin)\\.php$#', '', $script);
-    // Si vide, définir sur racine
-    if ($base === '') $base = '/';
-    define('BASE_URL', rtrim($base, '/'));
+    // Si la variable d'environnement est définie (Docker), on l'utilise
+    $envBase = getenv('BASE_URL');
+    if ($envBase !== false) {
+        // Docker : BASE_URL="" signifie racine
+        define('BASE_URL', rtrim($envBase, '/'));
+    } else {
+        // Local XAMPP : on calcule depuis l'URL du script
+        $script = $_SERVER['SCRIPT_NAME'] ?? '';
+        $base   = preg_replace('#/(index|router|admin)\.php$#', '', $script);
+        define('BASE_URL', rtrim($base, '/'));
+    }
 }
 
 /**
@@ -238,6 +243,55 @@ function uploadImage(array $file, string $folder = 'images'): string {
     }
     
     return '';
+}
+
+// ════════════════════════════════════════════════════════════
+// AJOUTS À COLLER À LA FIN DE config/helpers.php
+// ════════════════════════════════════════════════════════════
+
+/**
+ * Alias e() — utilisé partout dans les vues
+ */
+if (!function_exists('e')) {
+    function e(mixed $value): string {
+        return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+/**
+ * Alias categorieUrl() — les vues utilisent ce nom (avec 'e')
+ */
+if (!function_exists('categorieUrl')) {
+    function categorieUrl(string $slug): string {
+        return BASE_URL . '/categorie/' . $slug;
+    }
+}
+
+/**
+ * Formater une date en français
+ */
+if (!function_exists('formaterDate')) {
+    function formaterDate(string $date): string {
+        $mois = [
+            1=>'janvier', 2=>'février',  3=>'mars',      4=>'avril',
+            5=>'mai',     6=>'juin',     7=>'juillet',   8=>'août',
+            9=>'septembre',10=>'octobre',11=>'novembre', 12=>'décembre',
+        ];
+        $ts = strtotime($date);
+        return date('j', $ts) . ' ' . $mois[(int)date('n', $ts)] . ' ' . date('Y', $ts);
+    }
+}
+
+/**
+ * Générer un extrait depuis du HTML
+ */
+if (!function_exists('genererExtrait')) {
+    function genererExtrait(string $contenu, int $longueur = 150): string {
+        $texte = strip_tags($contenu);
+        $texte = preg_replace('/\s+/', ' ', trim($texte));
+        if (mb_strlen($texte) <= $longueur) return $texte;
+        return mb_substr($texte, 0, $longueur) . '…';
+    }
 }
 
 

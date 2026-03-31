@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titre = trim($_POST['titre'] ?? '');
     $contenu = $_POST['contenu'] ?? '';
     $cat_id = intval($_POST['categorie_id'] ?? 0);
-    $statut_id = intval($_POST['statut_id'] ?? 2);
+    $statut_id = intval($_POST['statut_id'] ?? 1);
     $alt = trim($_POST['alt_image'] ?? '');
     $meta = trim($_POST['meta_description'] ?? '');
     $date_publication = trim($_POST['date_publication'] ?? date('Y-m-d'));

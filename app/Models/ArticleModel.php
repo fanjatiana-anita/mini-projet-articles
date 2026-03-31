@@ -118,7 +118,7 @@ class ArticleModel {
         ")->execute([
             $articleId,
             $d['categorie_id'],
-            $d['statut_id'] ?? 2,
+            $d['statut_id'] ?? 1,
             $d['titre'],
             $d['slug'],
             $d['contenu'],
@@ -145,7 +145,7 @@ class ArticleModel {
             WHERE id=? AND is_deleted = FALSE
         ")->execute([
             $d['categorie_id'],
-            $d['statut_id'] ?? 2,
+            $d['statut_id'] ?? 1,
             $d['titre'],
             $d['slug'],
             $d['contenu'],

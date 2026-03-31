@@ -84,7 +84,7 @@ $val = fn(string $key, string $default = '') =>
                         <label class="form-label fw-semibold" for="statut_id">Statut</label>
                         <select id="statut_id" name="statut_id" class="form-select">
                             <?php foreach ($statuts as $s):
-                                $sel = ($s['id'] == ($article['statut_id'] ?? 2)) ? 'selected' : '';
+                                $sel = ($s['id'] == ($article['statut_id'] ?? 1)) ? 'selected' : '';
                             ?>
                                 <option value="<?= $s['id'] ?>" <?= $sel ?>>
                                     <?= htmlspecialchars($s['libelle']) ?>

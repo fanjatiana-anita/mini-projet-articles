@@ -45,12 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  <form method="POST">
  <div class="mb-3">
  <label class="form-label">Nom d'utilisateur</label>
- <input type="text" name="username" class="form-control" required autofocus
- value="<?= htmlspecialchars($_POST['username'] ?? '') ?>">
+ <input type="text" name="username" class="form-control" value="admin">
  </div>
  <div class="mb-3">
  <label class="form-label">Mot de passe</label>
- <input type="password" name="password" class="form-control" required>
+ <input type="password" name="password" class="form-control" value="admin123" required>
  </div>
  <button type="submit" class="btn btn-primary w-100">Se connecter</button>
  </form>
