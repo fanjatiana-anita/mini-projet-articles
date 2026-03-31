@@ -13,9 +13,8 @@ services:
       POSTGRES_PASSWORD: secret
     volumes:
       - db_data:/var/lib/postgresql/data
-      # Init automatique : script.sql (tables) puis data.sql (données)
+      # Init automatique : script.sql (tables + données)
       - ./database/script.sql:/docker-entrypoint-initdb.d/01-script.sql:ro
-      - ./database/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d iran_news"]
       interval: 5s

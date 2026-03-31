@@ -3,27 +3,28 @@
 --  (roles et statuts avant utilisateurs et articles)
 -- ============================================================
 
--- Roles
 INSERT INTO roles (libelle) VALUES
     ('admin'),    -- id=1
-    ('editeur');  -- id=2
+    ('editeur')   -- id=2
+ON CONFLICT DO NOTHING;
 
--- Statuts
 INSERT INTO statuts (libelle) VALUES
     ('publie'),    -- id=1
-    ('brouillon'); -- id=2
+    ('brouillon')  -- id=2
+ON CONFLICT DO NOTHING;
 
--- Categories
 INSERT INTO categories (nom, slug) VALUES
     ('Politique',  'politique'),   -- id=1
     ('Militaire',  'militaire'),   -- id=2
-    ('Diplomatie', 'diplomatie');  -- id=3
+    ('Diplomatie', 'diplomatie')   -- id=3
+ON CONFLICT DO NOTHING;
 
 -- Utilisateur admin
 -- username : admin
 -- password : admin123  (hashé avec password_hash)
 INSERT INTO utilisateurs (role_id, username, mot_de_passe) VALUES
-    (1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+    (1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi')
+ON CONFLICT DO NOTHING;
 
 -- Articles (statut_id=1 = publie)
 INSERT INTO articles (categorie_id, statut_id, titre, slug, contenu, image_principale, alt_image, meta_description) VALUES
@@ -74,5 +75,6 @@ INSERT INTO articles (categorie_id, statut_id, titre, slug, contenu, image_princ
  '<h2>Un dialogue difficile</h2><p>Les relations entre l''Iran et l''Union Europeenne sont marquees par des tensions persistantes.</p><h3>Mediation europeenne</h3><p>L''UE joue un role de mediateur entre l''Iran et les Etats-Unis.</p>',
  'assets/images/ue-iran.jpg',
  'Drapeaux de l''Union Europeenne et de l''Iran lors d''une conference diplomatique',
- 'Etat des relations diplomatiques entre l''Iran et l''Union Europeenne en 2024.');
+'Etat des relations diplomatiques entre l''Iran et l''Union Europeenne en 2024.')
+ON CONFLICT (slug) DO NOTHING;
 
