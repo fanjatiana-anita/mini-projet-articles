@@ -1830,6 +1830,62 @@ code {
     font-size: 0.9rem;
 }
 
+/* Quick Actions Colorées */
+.quick-action-btn.action-primary {
+    border-left: 4px solid var(--admin-primary);
+}
+
+.quick-action-btn.action-primary i {
+    color: var(--admin-primary);
+}
+
+.quick-action-btn.action-primary:hover {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.08) 0%, rgba(13, 110, 253, 0.15) 100%);
+    border-color: var(--admin-primary);
+}
+
+.quick-action-btn.action-success {
+    border-left: 4px solid var(--admin-success);
+}
+
+.quick-action-btn.action-success i {
+    color: var(--admin-success);
+}
+
+.quick-action-btn.action-success:hover {
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.08) 0%, rgba(25, 135, 84, 0.15) 100%);
+    border-color: var(--admin-success);
+    color: var(--admin-success);
+}
+
+.quick-action-btn.action-warning {
+    border-left: 4px solid var(--admin-warning);
+}
+
+.quick-action-btn.action-warning i {
+    color: #e0a800;
+}
+
+.quick-action-btn.action-warning:hover {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.2) 100%);
+    border-color: var(--admin-warning);
+    color: #e0a800;
+}
+
+.quick-action-btn.action-info {
+    border-left: 4px solid #0dcaf0;
+}
+
+.quick-action-btn.action-info i {
+    color: #0dcaf0;
+}
+
+.quick-action-btn.action-info:hover {
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.08) 0%, rgba(13, 202, 240, 0.15) 100%);
+    border-color: #0dcaf0;
+    color: #0dcaf0;
+}
+
 /* Recent Articles Section */
 .dashboard-section {
     background: var(--admin-white);

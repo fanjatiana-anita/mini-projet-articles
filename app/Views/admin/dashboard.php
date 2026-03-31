@@ -13,8 +13,6 @@ $pctPublies = $stats['nb_articles'] > 0
     : 0;
 ?>
 
-
-
 <!-- Stats Cards -->
 <div class="dashboard-stats">
     <div class="dashboard-stat-card">
@@ -44,7 +42,7 @@ $pctPublies = $stats['nb_articles'] > 0
     </div>
 
     <div class="dashboard-stat-card">
-        <div class="dashboard-stat-icon secondary">
+        <div class="dashboard-stat-icon warning">
             <i class="bi bi-folder" aria-hidden="true"></i>
         </div>
         <div class="dashboard-stat-content">
@@ -59,19 +57,19 @@ $pctPublies = $stats['nb_articles'] > 0
 
 <!-- Quick Actions -->
 <div class="quick-actions">
-    <a href="<?= adminUrl('articles', ['action' => 'create']) ?>" class="quick-action-btn">
+    <a href="<?= adminUrl('articles', ['action' => 'create']) ?>" class="quick-action-btn action-primary">
         <i class="bi bi-plus-circle" aria-hidden="true"></i>
         <span>Nouvel article</span>
     </a>
-    <a href="<?= adminUrl('categories') ?>" class="quick-action-btn">
+    <a href="<?= adminUrl('categories') ?>" class="quick-action-btn action-success">
         <i class="bi bi-folder-plus" aria-hidden="true"></i>
         <span>Nouvelle catégorie</span>
     </a>
-    <a href="<?= adminUrl('articles') ?>" class="quick-action-btn">
+    <a href="<?= adminUrl('articles') ?>" class="quick-action-btn action-warning">
         <i class="bi bi-pencil-square" aria-hidden="true"></i>
         <span>Modifier articles</span>
     </a>
-    <a href="<?= BASE_URL ?>/" class="quick-action-btn" target="_blank" rel="noopener noreferrer">
+    <a href="<?= BASE_URL ?>/" class="quick-action-btn action-info" target="_blank" rel="noopener noreferrer">
         <i class="bi bi-eye" aria-hidden="true"></i>
         <span>Voir le site</span>
     </a>
