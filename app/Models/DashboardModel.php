@@ -16,7 +16,7 @@ class DashboardModel {
 
     public function getLast5(): array {
         return $this->pdo->query("
-            SELECT a.titre, a.date_publication, s.libelle AS statut
+            SELECT a.id, a.titre, a.date_publication, s.libelle AS statut
             FROM articles a JOIN statuts s ON a.statut_id=s.id
             ORDER BY a.date_publication DESC LIMIT 5
         ")->fetchAll();

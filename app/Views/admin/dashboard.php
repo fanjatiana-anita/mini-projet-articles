@@ -6,112 +6,133 @@ require_once ROOT . '/app/Views/layouts/admin_header.php';
 $dashboard = new DashboardModel($pdo);
 $stats = $dashboard->getStats();
 $derniers = $dashboard->getLast5();
+
+// Calculer le pourcentage d'articles publiés
+$pctPublies = $stats['nb_articles'] > 0
+    ? round(($stats['nb_publies'] / $stats['nb_articles']) * 100)
+    : 0;
 ?>
 
-<!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h2 mb-1">Tableau de bord</h1>
-        <p class="text-muted mb-0">Bienvenue <?= htmlspecialchars($_SESSION['username']) ?> 👋</p>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="<?= adminUrl('articles&action=add') ?>" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-            Nouvel article
-        </a>
-    </div>
-</div>
+
 
 <!-- Stats Cards -->
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card stat-card stat-card-primary">
-            <div class="card-body">
-                <div class="stat-label">Articles au total</div>
-                <div class="stat-number"><?= $stats['nb_articles'] ?></div>
-                <a href="<?= adminUrl('articles') ?>" class="btn btn-light btn-sm mt-2">
-                    <i class="bi bi-arrow-right me-1" aria-hidden="true"></i>
-                    Gérer les articles
-                </a>
-            </div>
+<div class="dashboard-stats">
+    <div class="dashboard-stat-card">
+        <div class="dashboard-stat-icon primary">
+            <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+        </div>
+        <div class="dashboard-stat-content">
+            <div class="stat-value"><?= $stats['nb_articles'] ?></div>
+            <p class="stat-label">Articles au total</p>
+            <a href="<?= adminUrl('articles') ?>" class="stat-link">
+                Voir tous <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card stat-card stat-card-success">
-            <div class="card-body">
-                <div class="stat-label">Articles publiés</div>
-                <div class="stat-number"><?= $stats['nb_publies'] ?></div>
-                <a href="<?= BASE_URL ?>/" class="btn btn-light btn-sm mt-2" target="_blank" rel="noopener noreferrer">
-                    <i class="bi bi-eye me-1" aria-hidden="true"></i>
-                    Voir le site
-                </a>
-            </div>
+    <div class="dashboard-stat-card">
+        <div class="dashboard-stat-icon success">
+            <i class="bi bi-check-circle" aria-hidden="true"></i>
+        </div>
+        <div class="dashboard-stat-content">
+            <div class="stat-value"><?= $stats['nb_publies'] ?></div>
+            <p class="stat-label">Articles publiés (<?= $pctPublies ?>%)</p>
+            <a href="<?= BASE_URL ?>/" class="stat-link" target="_blank" rel="noopener noreferrer">
+                Voir le site <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+            </a>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card stat-card stat-card-secondary">
-            <div class="card-body">
-                <div class="stat-label">Catégories</div>
-                <div class="stat-number"><?= $stats['nb_categories'] ?></div>
-                <a href="<?= adminUrl('categories') ?>" class="btn btn-light btn-sm mt-2">
-                    <i class="bi bi-folder me-1" aria-hidden="true"></i>
-                    Gérer les catégories
-                </a>
-            </div>
+    <div class="dashboard-stat-card">
+        <div class="dashboard-stat-icon secondary">
+            <i class="bi bi-folder" aria-hidden="true"></i>
+        </div>
+        <div class="dashboard-stat-content">
+            <div class="stat-value"><?= $stats['nb_categories'] ?></div>
+            <p class="stat-label">Catégories</p>
+            <a href="<?= adminUrl('categories') ?>" class="stat-link">
+                Gérer <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
         </div>
     </div>
 </div>
 
-<!-- Recent Articles Table -->
-<div class="admin-card card">
-    <div class="admin-card-header card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-clock-history me-2" aria-hidden="true"></i>5 derniers articles</span>
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <a href="<?= adminUrl('articles', ['action' => 'create']) ?>" class="quick-action-btn">
+        <i class="bi bi-plus-circle" aria-hidden="true"></i>
+        <span>Nouvel article</span>
+    </a>
+    <a href="<?= adminUrl('categories') ?>" class="quick-action-btn">
+        <i class="bi bi-folder-plus" aria-hidden="true"></i>
+        <span>Nouvelle catégorie</span>
+    </a>
+    <a href="<?= adminUrl('articles') ?>" class="quick-action-btn">
+        <i class="bi bi-pencil-square" aria-hidden="true"></i>
+        <span>Modifier articles</span>
+    </a>
+    <a href="<?= BASE_URL ?>/" class="quick-action-btn" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-eye" aria-hidden="true"></i>
+        <span>Voir le site</span>
+    </a>
+</div>
+
+<!-- Recent Articles -->
+<div class="dashboard-section">
+    <div class="dashboard-section-header">
+        <h2>
+            <i class="bi bi-clock-history" aria-hidden="true"></i>
+            Derniers articles
+        </h2>
         <a href="<?= adminUrl('articles') ?>" class="btn btn-sm btn-outline-primary">
             Voir tous <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
         </a>
     </div>
-    <div class="table-responsive">
-        <table class="admin-table table table-hover mb-0" role="table">
-            <thead>
-                <tr>
-                    <th scope="col" style="width: 50%">Titre</th>
-                    <th scope="col" style="width: 20%">Statut</th>
-                    <th scope="col" style="width: 30%">Date de publication</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($derniers)): ?>
-                    <tr>
-                        <td colspan="3" class="text-center text-muted py-4">
-                            <i class="bi bi-inbox d-block mb-2" style="font-size: 2rem;" aria-hidden="true"></i>
-                            Aucun article pour le moment
-                        </td>
-                    </tr>
+
+    <?php if (empty($derniers)): ?>
+        <div class="dashboard-empty">
+            <i class="bi bi-inbox d-block" aria-hidden="true"></i>
+            <p>Aucun article pour le moment</p>
+            <a href="<?= adminUrl('articles', ['action' => 'create']) ?>" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                Créer votre premier article
+            </a>
+        </div>
+    <?php else: ?>
+        <?php foreach ($derniers as $a): ?>
+        <div class="dashboard-article-item">
+            <div class="dashboard-article-icon">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+            </div>
+            <div class="dashboard-article-info">
+                <div class="dashboard-article-title">
+                    <a href="<?= adminUrl('articles', ['action' => 'edit', 'id' => $a['id']]) ?>">
+                        <?= htmlspecialchars($a['titre']) ?>
+                    </a>
+                </div>
+                <div class="dashboard-article-meta">
+                    <span>
+                        <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+                        <?= date('d/m/Y', strtotime($a['date_publication'])) ?>
+                    </span>
+                </div>
+            </div>
+            <div class="dashboard-article-status">
+                <?php if ($a['statut'] === 'publie'): ?>
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+                        Publié
+                    </span>
                 <?php else: ?>
-                    <?php foreach ($derniers as $a): ?>
-                    <tr>
-                        <td>
-                            <a href="<?= adminUrl('articles&action=edit&id=' . $a['id']) ?>" class="text-decoration-none text-dark fw-medium">
-                                <?= htmlspecialchars($a['titre']) ?>
-                            </a>
-                        </td>
-                        <td>
-                            <span class="admin-badge <?= $a['statut'] === 'publie' ? 'admin-badge-success' : 'admin-badge-secondary' ?>">
-                                <?= $a['statut'] === 'publie' ? 'Publié' : ucfirst($a['statut']) ?>
-                            </span>
-                        </td>
-                        <td class="text-muted">
-                            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
-                            <?= date('d/m/Y', strtotime($a['date_publication'])) ?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                    <span class="badge bg-secondary">
+                        <i class="bi bi-clock me-1" aria-hidden="true"></i>
+                        <?= ucfirst($a['statut']) ?>
+                    </span>
                 <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </div>
 
 <?php require_once __DIR__ . '/../layouts/admin_footer.php'; ?>
