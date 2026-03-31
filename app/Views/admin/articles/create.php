@@ -2,7 +2,6 @@
 require_once ROOT . '/config/database.php';
 require_once ROOT . '/config/slug.php';
 require_once ROOT . '/app/Models/ArticleModel.php';
-require_once ROOT . '/app/Views/layouts/admin_header.php';
 
 $model = new ArticleModel($pdo);
 $categories = $model->getAllCategories();
@@ -22,14 +21,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $slug = generer_slug($titre);
     $image_path = '';
 
-    if (!empty($_FILES['image']['name'])) {
+    // Validation des champs obligatoires
+    if (empty($titre) || empty($contenu) || empty($cat_id) || empty($meta) || empty($alt) || empty($date_publication)) {
+        $erreur = 'Tous les champs marqués * sont obligatoires.';
+    }
+
+    // Upload image (obligatoire en création)
+    if (empty($erreur) && !empty($_FILES['image']['name'])) {
         $image_path = uploadImage($_FILES['image'], 'images');
         if (empty($image_path)) {
             $erreur = 'Erreur lors de l\'upload. Formats: JPG, PNG, GIF, WebP. Max: 5MB.';
         }
+    } elseif (empty($erreur) && empty($_FILES['image']['name'])) {
+        $erreur = 'L\'image principale est obligatoire.';
     }
 
-    if ($titre && $contenu && $cat_id && empty($erreur)) {
+    if (empty($erreur)) {
         try {
             $model->create([
                 'categorie_id' => $cat_id,
@@ -37,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'titre' => $titre,
                 'slug' => $slug,
                 'contenu' => $contenu,
-                'image_principale' => $image_path ?: NULL,
-                'alt_image' => $alt ?: NULL,
-                'meta_description' => $meta ?: NULL,
+                'image_principale' => $image_path,
+                'alt_image' => $alt,
+                'meta_description' => $meta,
                 'date_publication' => $date_publication,
             ]);
             header('Location: ' . adminUrl('articles'));
@@ -47,11 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (PDOException $e) {
             $erreur = "Erreur BDD (slug unique?): " . $e->getMessage();
         }
-    } else if (empty($erreur)) {
-        $erreur = 'Titre, contenu et catégorie obligatoires.';
     }
 }
 ?>
+
+<?php require_once ROOT . '/app/Views/layouts/admin_header.php'; ?>
 
 <!-- Page Header avec style moderne -->
 <div class="d-flex justify-content-between align-items-center mb-4">

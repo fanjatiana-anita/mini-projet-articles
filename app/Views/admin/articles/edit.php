@@ -2,7 +2,6 @@
 require_once ROOT . '/config/database.php';
 require_once ROOT . '/config/slug.php';
 require_once ROOT . '/app/Models/ArticleModel.php';
-require_once ROOT . '/app/Views/layouts/admin_header.php';
 
 $id = intval($_GET['id'] ?? 0);
 if (!$id) { 
@@ -72,6 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+<?php require_once ROOT . '/app/Views/layouts/admin_header.php'; ?>
 
 <!-- Page Header avec style moderne -->
 <div class="d-flex justify-content-between align-items-center mb-4">

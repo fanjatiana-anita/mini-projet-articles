@@ -2,11 +2,22 @@
 require_once ROOT . '/config/database.php';
 require_once ROOT . '/config/slug.php';
 require_once ROOT . '/app/Models/ArticleModel.php';
-require_once ROOT . '/app/Views/layouts/admin_header.php';
 
 $model = new ArticleModel($pdo);
 $erreur = '';
 $success = '';
+
+if (isset($_GET['delete'])) {
+    try {
+        $model->deleteCategory((int)$_GET['delete']);
+        header('Location: ' . adminUrl('categories'));
+        exit;
+    } catch (RuntimeException $e) {
+        $erreur = $e->getMessage();
+    } catch (PDOException $e) {
+        $erreur = 'Suppression impossible pour des raisons de cohérence des données.';
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
@@ -21,14 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-if (isset($_GET['delete'])) {
-    $model->deleteCategory(intval($_GET['delete']));
-    header('Location: ' . adminUrl('categories'));
-    exit;
-}
-
 $categories = $model->getAllCategories();
 ?>
+
+<?php require_once ROOT . '/app/Views/layouts/admin_header.php'; ?>
 
 <!-- Page Header avec style moderne -->
 <div class="d-flex justify-content-between align-items-center mb-4">

@@ -253,7 +253,16 @@ class ArticleModel {
         return $this->pdo->prepare("INSERT INTO categories (nom,slug) VALUES (?,?)")->execute([$nom,$slug]);
     }
 
+    public function countArticlesInCategory(int $id): int {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM articles WHERE categorie_id = ? AND is_deleted = FALSE");
+        $stmt->execute([$id]);
+        return (int)$stmt->fetchColumn();
+    }
+
     public function deleteCategory(int $id): bool {
+        if ($this->countArticlesInCategory($id) > 0) {
+            throw new RuntimeException('Impossible de supprimer cette catégorie : des articles y sont encore rattachés.');
+        }
         return $this->pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$id]);
     }
 

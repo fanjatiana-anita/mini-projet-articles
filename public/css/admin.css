@@ -2002,3 +2002,219 @@ code {
     margin-bottom: 1rem;
 }
 
+/* ============================================
+   PAGE HEADER COLORÉ
+   ============================================ */
+.page-header-colored {
+    border-radius: var(--admin-radius-lg);
+    padding: 1.5rem 2rem;
+    color: var(--admin-white);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--admin-shadow-lg);
+}
+
+.page-header-colored.primary {
+    background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-primary-dark) 100%);
+}
+
+.page-header-colored.success {
+    background: linear-gradient(135deg, var(--admin-success) 0%, #146c43 100%);
+}
+
+.page-header-colored.warning {
+    background: linear-gradient(135deg, #e0a800 0%, #cc9a00 100%);
+}
+
+.page-header-colored::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -15%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.page-header-colored h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    position: relative;
+    z-index: 1;
+}
+
+.page-header-colored p {
+    opacity: 0.9;
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+}
+
+.page-header-colored p .separator {
+    margin: 0 0.5rem;
+    opacity: 0.7;
+}
+
+.page-header-colored .btn {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   MINI STATS
+   ============================================ */
+.mini-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.mini-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--admin-white);
+    padding: 0.875rem 1.25rem;
+    border-radius: var(--admin-radius);
+    box-shadow: var(--admin-shadow);
+    border: 1px solid var(--admin-border);
+    flex: 1;
+    min-width: 140px;
+}
+
+.mini-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--admin-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.mini-stat-icon.primary {
+    background: rgba(13, 110, 253, 0.15);
+    color: var(--admin-primary);
+}
+
+.mini-stat-icon.success {
+    background: rgba(25, 135, 84, 0.15);
+    color: var(--admin-success);
+}
+
+.mini-stat-icon.warning {
+    background: rgba(255, 193, 7, 0.2);
+    color: #e0a800;
+}
+
+.mini-stat-icon.danger {
+    background: rgba(220, 53, 69, 0.15);
+    color: var(--admin-danger);
+}
+
+.mini-stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.mini-stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--admin-text);
+    line-height: 1;
+}
+
+.mini-stat-label {
+    font-size: 0.75rem;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 767.98px) {
+    .mini-stats {
+        gap: 0.75rem;
+    }
+
+    .mini-stat {
+        min-width: calc(50% - 0.5rem);
+        padding: 0.75rem 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .mini-stat {
+        min-width: 100%;
+    }
+}
+
+/* ============================================
+   CATEGORY BADGE
+   ============================================ */
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    background: var(--admin-light);
+    border-radius: var(--admin-radius);
+    font-size: 0.85rem;
+    color: var(--admin-text);
+    border: 1px solid var(--admin-border);
+}
+
+.category-badge.muted {
+    opacity: 0.6;
+}
+
+.category-badge i {
+    color: var(--admin-primary);
+}
+
+/* ============================================
+   SECTION VARIANTS
+   ============================================ */
+.dashboard-section.section-danger {
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.dashboard-section-header.header-danger {
+    background: rgba(220, 53, 69, 0.08);
+}
+
+.dashboard-section-header.header-danger h2 i {
+    color: var(--admin-danger);
+}
+
+/* ============================================
+   BUTTON OUTLINE VARIANTS
+   ============================================ */
+.btn-outline-warning {
+    color: #e0a800;
+    border-color: #e0a800;
+    background: transparent;
+}
+
+.btn-outline-warning:hover {
+    background: var(--admin-warning);
+    border-color: var(--admin-warning);
+    color: var(--admin-dark);
+}
+
+.btn-outline-danger {
+    color: var(--admin-danger);
+    border-color: var(--admin-danger);
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: var(--admin-danger);
+    border-color: var(--admin-danger);
+    color: var(--admin-white);
+}
+

@@ -56,11 +56,11 @@ $val = fn(string $key, string $default = '') =>
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <label class="form-label fw-semibold" for="meta_description">
-                        Meta description
+                        Meta description <span class="text-danger">*</span>
                         <small class="text-muted fw-normal">(max 160 car.)</small>
                     </label>
                     <textarea id="meta_description" name="meta_description"
-                              class="form-control" rows="2" maxlength="160"
+                              class="form-control" rows="2" maxlength="160" required
                               placeholder="Résumé affiché dans Google…"><?= $val('meta_description') ?></textarea>
                     <div class="form-text">
                         <span id="metaCount"><?= strlen($_POST['meta_description'] ?? ($article['meta_description'] ?? '')) ?></span>/160 caractères
@@ -81,8 +81,8 @@ $val = fn(string $key, string $default = '') =>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold" for="statut_id">Statut</label>
-                        <select id="statut_id" name="statut_id" class="form-select">
+                        <label class="form-label fw-semibold" for="statut_id">Statut <span class="text-danger">*</span></label>
+                        <select id="statut_id" name="statut_id" class="form-select" required>
                             <?php foreach ($statuts as $s):
                                 $sel = ($s['id'] == ($article['statut_id'] ?? 1)) ? 'selected' : '';
                             ?>
@@ -93,9 +93,9 @@ $val = fn(string $key, string $default = '') =>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold" for="date_publication">Date</label>
+                        <label class="form-label fw-semibold" for="date_publication">Date <span class="text-danger">*</span></label>
                         <input type="date" id="date_publication" name="date_publication"
-                               class="form-control"
+                               class="form-control" required
                                value="<?= $val('date_publication', date('Y-m-d')) ?>">
                     </div>
                     <div class="d-grid gap-2">
@@ -111,12 +111,15 @@ $val = fn(string $key, string $default = '') =>
 
             <!-- Catégorie -->
             <div class="card border-0 shadow-sm mb-3">
-                <div class="card-header bg-white fw-semibold border-bottom">Catégorie</div>
+                <div class="card-header bg-white fw-semibold border-bottom">Catégorie <span class="text-danger">*</span></div>
                 <div class="card-body">
                     <select name="categorie_id" class="form-select" required>
-                        <option value="">— Choisir —</option>
                         <?php foreach ($categories as $c):
-                            $sel = ($c['id'] == ($article['categorie_id'] ?? '')) ? 'selected' : '';
+                            // En édition : sélectionne la catégorie de l'article
+                            // En création : sélectionne "Politique" par défaut
+                            $defaultCat = strtolower($c['nom']) === 'politique' ? $c['id'] : null;
+                            $currentCat = $article['categorie_id'] ?? ($_POST['categorie_id'] ?? $defaultCat);
+                            $sel = ($c['id'] == $currentCat) ? 'selected' : '';
                         ?>
                             <option value="<?= $c['id'] ?>" <?= $sel ?>>
                                 <?= htmlspecialchars($c['nom']) ?>
@@ -128,7 +131,7 @@ $val = fn(string $key, string $default = '') =>
 
             <!-- Image principale -->
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white fw-semibold border-bottom">Image principale</div>
+                <div class="card-header bg-white fw-semibold border-bottom">Image principale <span class="text-danger">*</span></div>
                 <div class="card-body">
 
                     <?php
@@ -160,7 +163,8 @@ $val = fn(string $key, string $default = '') =>
                     <div id="uploadZone" <?= ($isEdit && $imgActuelle) ? 'style="display:none"' : '' ?>>
                         <input type="file" name="image" id="imageInput"
                                class="form-control form-control-sm"
-                               accept="image/jpeg,image/png,image/gif,image/webp">
+                               accept="image/jpeg,image/png,image/gif,image/webp"
+                               <?= !$isEdit ? 'required' : '' ?>>
                         <div class="form-text">JPG, PNG, GIF, WebP — max 5 Mo</div>
                         <!-- Prévisualisation avant envoi -->
                         <div id="previewBox" class="mt-2" style="display:none">
@@ -173,10 +177,10 @@ $val = fn(string $key, string $default = '') =>
                     <!-- Alt image -->
                     <div class="mt-3">
                         <label class="form-label fw-semibold small" for="alt_image">
-                            Texte alt <small class="text-muted">(SEO + accessibilité)</small>
+                            Texte alt <span class="text-danger">*</span> <small class="text-muted">(SEO + accessibilité)</small>
                         </label>
                         <input type="text" id="alt_image" name="alt_image"
-                               class="form-control form-control-sm"
+                               class="form-control form-control-sm" required
                                placeholder="Ex: Défilé militaire à Téhéran"
                                value="<?= $val('alt_image') ?>">
                     </div>
@@ -298,4 +302,12 @@ deleteCheckbox?.addEventListener('change', function () {
     }
 });
 <?php endif; ?>
+
+// ── Synchroniser TinyMCE avant soumission ─────────────────────
+const articleForm = document.getElementById('articleForm');
+articleForm?.addEventListener('submit', () => {
+    if (window.tinymce) {
+        tinymce.triggerSave();
+    }
+});
 </script>
